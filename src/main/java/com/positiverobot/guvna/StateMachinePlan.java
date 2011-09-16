@@ -7,6 +7,7 @@ public class StateMachinePlan {
 	List<?> _inputs;
 	Map<Object, List<?>> _transitions = new HashMap<Object, List<?>>();
 	Map<Object, Action> _entryActions = new HashMap<Object, Action>();
+	Map<Object, Action> _leaveActions = new HashMap<Object, Action>();
 
 	public void ri(Object... inputs) {
 		_inputs = Arrays.asList(inputs);
@@ -25,12 +26,22 @@ public class StateMachinePlan {
 	}
 
 	public void entryAction(Object state, Action action) {
-		Object previousState = _entryActions.put(state, action);
-		if (previousState != null) {
+		Object previousAction = _entryActions.put(state, action);
+		if (previousAction != null) {
 			throw new IllegalStateException(
 					String.format(
 							"Replacing the previous entry action for [%s] is not allowed",
-							previousState));
+							previousAction));
 		}
+	}
+
+	public void leaveAction(Object state, Action action) {
+		Object previousAction = _leaveActions.put(state, action);
+		if (previousAction != null) {
+			throw new IllegalStateException(
+					String.format(
+							"Replacing the previous leave action for [%s] is not allowed",
+							previousAction));
+		}		
 	}
 }

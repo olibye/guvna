@@ -30,13 +30,18 @@ public class StateMachine {
 		_eventQueue.add(event);
 	}
 
-	private void performTransition(Object state, Object event) {
-		Action command = _plan._entryActions.get(state);
-		if (command != null) {
-			command.apply(this, event);
+	private void performTransition(Object nextState, Object event) {
+		Action leaveAction = _plan._leaveActions.get(_currentState);
+		if (leaveAction != null) {
+			leaveAction.apply(this, event, nextState);
+		}
+
+		Action entryAction = _plan._entryActions.get(nextState);
+		if (entryAction != null) {
+			entryAction.apply(this, event, nextState);
 		}
 		// entry actions performed before state change
-		_currentState = state;
+		_currentState = nextState;
 	}
 
 	/**
