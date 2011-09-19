@@ -8,7 +8,6 @@ import java.util.List;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.Sequence;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class StateMachineTestCase {
@@ -43,21 +42,19 @@ public class StateMachineTestCase {
 
 		_mockery.checking(new Expectations() {
 			{
-				oneOf(stateOneEntry).apply(unit,null);
+				oneOf(stateOneEntry).apply(unit, null, "state1");
 				inSequence(transitions);
 
-				oneOf(stateTwoEntry).apply(unit,"nudge");
+				oneOf(stateTwoEntry).apply(unit, "nudge", "state2");
 				inSequence(transitions);
 
-				oneOf(stateOneEntry).apply(unit,"nudge");
+				oneOf(stateOneEntry).apply(unit, "nudge", "state1");
 				inSequence(transitions);
 			}
 		});
 
-
 		builder.entryAction("state1", stateOneEntry);
 		builder.entryAction("state2", stateTwoEntry);
-
 
 		// queue the loopback event to trigger the entry action for the start
 		// state
@@ -67,7 +64,48 @@ public class StateMachineTestCase {
 		unit.queue("nudge");
 		unit.queue("nudge");
 		unit.processOutstandingEvents();
-		
+
+		_mockery.assertIsSatisfied();
+	}
+
+	@Test
+	public void testLeaveAction() {
+
+		final Action stateOneLeave = _mockery.mock(Action.class,
+				"stateOneLeaveAction");
+		final Action stateTwoLeave = _mockery.mock(Action.class,
+				"stateTwoLeaveAction");
+
+		final Object target = new Object();
+
+		final Sequence transitions = _mockery
+				.sequence("State transition order");
+
+		StateMachinePlan builder = new StateMachinePlan();
+		// @formatter:off
+		builder.ri(null    , "nudge");
+		builder.at("state1", "state2");
+		builder.at("state2", "state1");
+		// @formatter:on
+		final StateMachine unit = new StateMachine(builder, "state1");
+
+		_mockery.checking(new Expectations() {
+			{
+				oneOf(stateOneLeave).apply(unit, "nudge", "state2");
+				inSequence(transitions);
+
+				oneOf(stateTwoLeave).apply(unit, "nudge", "state1");
+				inSequence(transitions);
+			}
+		});
+
+		builder.leaveAction("state1", stateOneLeave);
+		builder.leaveAction("state2", stateTwoLeave);
+
+		unit.queue("nudge");
+		unit.queue("nudge");
+		unit.processOutstandingEvents();
+
 		_mockery.assertIsSatisfied();
 	}
 
@@ -86,12 +124,14 @@ public class StateMachineTestCase {
 
 		class TrafficLightPlan extends StateMachinePlan {
 			Action startBeepTimer = new Action() {
-				public void apply(Object aSubject, Object eve) {
+				public void apply(Object aSubject, Object event,
+						Object nextState) {
 				}
 			};
 
 			Action startWaitTimer = new Action() {
-				public void apply(Object aSubject, Object event) {
+				public void apply(Object aSubject, Object event,
+						Object nextState) {
 				}
 			};
 
@@ -128,7 +168,7 @@ public class StateMachineTestCase {
 		unit.queue(eWaitTime);
 		unit.processNextEvent();
 		assertEquals("Wrong state", sGreen___, unit.getState());
-		
+
 		_mockery.assertIsSatisfied();
 	}
 }
