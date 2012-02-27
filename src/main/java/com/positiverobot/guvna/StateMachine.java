@@ -26,7 +26,13 @@ public class StateMachine {
 		return _currentState;
 	}
 
+	/**
+	 * @param event will cause a runtime exception
+	 */
 	public void queue(Object event) {
+		if (event == null) {
+			throw new IllegalArgumentException("Null events are invalid");
+		}
 		_eventQueue.add(event);
 	}
 
@@ -51,13 +57,18 @@ public class StateMachine {
 	public boolean processNextEvent() {
 		Object event = _eventQueue.poll();
 
-		// allow null events, usually the reentry event
+		// Ignore null events as we can't tell if they're real
+		// or indicate the queue is empty
+		if(event == null) {
+			return hasMoreEvents();
+		}
+		
 		int indexOfEvent = _plan._inputs.indexOf(event);
 
 		if (indexOfEvent >= 0) {
-			// don't ignore reentry event
+			// don't ignore loopback event in column zero
 
-			LOG.info("{} received event type:[{}]", this, event);
+			LOG.debug("{} received event type:[{}]", this, event);
 
 			List<?> list = _plan._transitions.get(_currentState);
 			if (list != null) {
@@ -65,14 +76,14 @@ public class StateMachine {
 					Object nextState = list.get(indexOfEvent);
 					if (nextState != null) {
 						performTransition(nextState, event);
-						LOG.info("{} processed event type:[{}]", this, event);
+						LOG.debug("{} processed event type:[{}]", this, event);
 					} else {
-						LOG.info(
+						LOG.debug(
 								"{} has no transition for registered event:[{}]",
 								this, event);
 					}
 				} else {
-					LOG.info("{} has no transition for registered event:[{}]",
+					LOG.debug("{} has no transition for registered event:[{}]",
 							this, event);
 				}
 			} else {
@@ -81,6 +92,10 @@ public class StateMachine {
 		} else {
 			LOG.error("{} received Unknown event type:[{}]", this, event);
 		}
+		return hasMoreEvents();
+	}
+
+	public boolean hasMoreEvents() {
 		return _eventQueue.peek() != null;
 	}
 

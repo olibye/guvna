@@ -35,14 +35,14 @@ public class StateMachineTestCase {
 				.sequence("State transition order");
 
 		StateMachinePlan builder = new StateMachinePlan();
-		builder.ri(null, "nudge");
+		builder.ri("loopback", "nudge");
 		builder.at("state1", "state2");
 		builder.at("state2", "state1");
 		final StateMachine unit = new StateMachine(builder, "state1");
 
 		_mockery.checking(new Expectations() {
 			{
-				oneOf(stateOneEntry).apply(unit, null, "state1");
+				oneOf(stateOneEntry).apply(unit, "loopback", "state1");
 				inSequence(transitions);
 
 				oneOf(stateTwoEntry).apply(unit, "nudge", "state2");
@@ -58,7 +58,7 @@ public class StateMachineTestCase {
 
 		// queue the loopback event to trigger the entry action for the start
 		// state
-		unit.queue(null);
+		unit.queue("loopback");
 		unit.processNextEvent();
 
 		unit.queue("nudge");

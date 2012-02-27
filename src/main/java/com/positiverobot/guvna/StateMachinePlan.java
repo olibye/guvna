@@ -9,10 +9,21 @@ public class StateMachinePlan {
 	Map<Object, Action> _entryActions = new HashMap<Object, Action>();
 	Map<Object, Action> _leaveActions = new HashMap<Object, Action>();
 
+	/**
+	 * Register Inputs. Short method name to same space in the matrix, the first
+	 * input is the "loopback" which will cause reentry to the current state
+	 * 
+	 * @param inputs
+	 */
 	public void ri(Object... inputs) {
 		_inputs = Arrays.asList(inputs);
 	}
 
+	/**
+	 * Transitions
+	 * 
+	 * @param theTransitions
+	 */
 	public void at(Object... theTransitions) {
 		List<Object> transitions = Arrays.asList(theTransitions);
 		Object previousState = _transitions
@@ -30,7 +41,7 @@ public class StateMachinePlan {
 		if (previousAction != null) {
 			throw new IllegalStateException(
 					String.format(
-							"Replacing the previous entry action for [%s] is not allowed",
+							"Replacing the previous entry Action for [%s] is not allowed",
 							previousAction));
 		}
 	}
@@ -40,8 +51,8 @@ public class StateMachinePlan {
 		if (previousAction != null) {
 			throw new IllegalStateException(
 					String.format(
-							"Replacing the previous leave action for [%s] is not allowed",
+							"Replacing the previous leave Action for [%s] is not allowed",
 							previousAction));
-		}		
+		}
 	}
 }

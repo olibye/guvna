@@ -28,6 +28,11 @@ public class TrafficLightFSM extends StateMachine {
 		PushButn, EndBeeps, WaitTime
 	};
 
+	/**
+	 * Static so that it's only constructed once on class load
+	 * You obviously shouldn't store individual state in the plan.
+	 * Your FSM will be passed into the transition Actions
+	 */
 	private static final StateMachinePlan sPLAN = new StateMachinePlan() {
 		{
 
