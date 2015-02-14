@@ -24,21 +24,19 @@ public class StateMachineTestCase {
 	@Test
 	public void testEntryAction() {
 
-		final Action stateOneEntry = _mockery.mock(Action.class,
+		final Action<String,String> stateOneEntry = _mockery.mock(Action.class,
 				"stateOneEntryAction");
-		final Action stateTwoEntry = _mockery.mock(Action.class,
+		final Action<String,String> stateTwoEntry = _mockery.mock(Action.class,
 				"stateTwoEntryAction");
-
-		final Object target = new Object();
 
 		final Sequence transitions = _mockery
 				.sequence("State transition order");
 
-		StateMachinePlan builder = new StateMachinePlan();
+		StateMachinePlan<String,String> builder = new StateMachinePlan<>();
 		builder.ri("loopback", "nudge");
 		builder.at("state1", "state2");
 		builder.at("state2", "state1");
-		final StateMachine unit = new StateMachine(builder, "state1");
+		final StateMachine<String,String> unit = new StateMachine<>(builder, "state1");
 
 		_mockery.checking(new Expectations() {
 			{
@@ -71,23 +69,21 @@ public class StateMachineTestCase {
 	@Test
 	public void testLeaveAction() {
 
-		final Action stateOneLeave = _mockery.mock(Action.class,
+		final Action<String,String> stateOneLeave = _mockery.mock(Action.class,
 				"stateOneLeaveAction");
-		final Action stateTwoLeave = _mockery.mock(Action.class,
+		final Action<String,String> stateTwoLeave = _mockery.mock(Action.class,
 				"stateTwoLeaveAction");
-
-		final Object target = new Object();
 
 		final Sequence transitions = _mockery
 				.sequence("State transition order");
 
-		StateMachinePlan builder = new StateMachinePlan();
+		StateMachinePlan<String,String> builder = new StateMachinePlan<>();
 		// @formatter:off
 		builder.ri(null    , "nudge");
 		builder.at("state1", "state2");
 		builder.at("state2", "state1");
 		// @formatter:on
-		final StateMachine unit = new StateMachine(builder, "state1");
+		final StateMachine<String,String> unit = new StateMachine<>(builder, "state1");
 
 		_mockery.checking(new Expectations() {
 			{

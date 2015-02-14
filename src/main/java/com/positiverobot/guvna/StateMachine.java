@@ -14,10 +14,10 @@ public class StateMachine<S,E> {
     private final Logger LOG = LoggerFactory.getLogger(StateMachine.class);
 
     private S _currentState;
-    private StateMachinePlan<StateMachine<S,E>,S,E> _plan;
+    private StateMachinePlan<S,E> _plan;
     private Queue<E> _eventQueue = new LinkedList<>();
 
-    public StateMachine(StateMachinePlan<StateMachine<S,E>, S,E> plan, S aStartState) {
+    public StateMachine(StateMachinePlan<S,E> plan, S aStartState) {
         _plan = plan;
         _currentState = aStartState;
     }
@@ -38,12 +38,12 @@ public class StateMachine<S,E> {
     }
 
     private void performTransition(S nextState, E event) {
-        Action<StateMachine<S,E>,S,E> leaveAction = _plan._leaveActions.get(_currentState);
+        Action<S,E> leaveAction = _plan._leaveActions.get(_currentState);
         if (leaveAction != null) {
             leaveAction.apply(this, event, nextState);
         }
 
-        Action<StateMachine<S,E>,S,E> entryAction = _plan._entryActions.get(nextState);
+        Action<S,E> entryAction = _plan._entryActions.get(nextState);
         if (entryAction != null) {
             entryAction.apply(this, event, nextState);
         }

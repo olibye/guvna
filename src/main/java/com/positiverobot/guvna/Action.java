@@ -1,5 +1,5 @@
 package com.positiverobot.guvna;
 
-public interface Action<T,S,E> {
-	public void apply(T target, E event, S futureState);
+public interface Action<S,E> {
+	public void apply(StateMachine<S,E> target, E event, S futureState);
 }

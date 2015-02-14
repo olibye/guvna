@@ -12,7 +12,7 @@ package com.positiverobot.guvna;
  * @author byeo
  * 
  */
-public class TrafficLightFSM extends StateMachine {
+public class TrafficLightFSM extends StateMachine<TrafficLightFSM.s,TrafficLightFSM.e> {
 
 	/**
 	 * States
@@ -33,7 +33,7 @@ public class TrafficLightFSM extends StateMachine {
 	 * You obviously shouldn't store individual state in the plan.
 	 * Your FSM will be passed into the transition Actions
 	 */
-	private static final StateMachinePlan sPLAN = new StateMachinePlan() {
+	private static final StateMachinePlan<s,e> sPLAN = new StateMachinePlan<s,e>() {
 		{
 
 			/**
@@ -52,14 +52,14 @@ public class TrafficLightFSM extends StateMachine {
 			at(s.Amber   , null      , null      , s.Red     );
 			// @formatter:on
 
-			Action<TrafficLightFSM,s,e> startBeepTimer = new Action<TrafficLightFSM,s,e>() {
-				public void apply(TrafficLightFSM fsm, e event,
+			Action<s,e> startBeepTimer = new Action<s,e>() {
+				public void apply(StateMachine<s,e> fsm, e event,
 						s nextState) {
 				}
 			};
 
-			Action<TrafficLightFSM,s,e> startWaitTimer = new Action<TrafficLightFSM,s,e>() {
-				public void apply(TrafficLightFSM fsm, e event,
+			Action<s,e> startWaitTimer = new Action<s,e>() {
+				public void apply(StateMachine<s,e> fsm, e event,
 						s nextState) {
 				}
 			};
@@ -71,7 +71,7 @@ public class TrafficLightFSM extends StateMachine {
 		}
 	};
 
-	public TrafficLightFSM(Object aStartState) {
+	public TrafficLightFSM(s aStartState) {
 		super(sPLAN, aStartState);
 	}
 

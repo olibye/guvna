@@ -2,12 +2,12 @@ package com.positiverobot.guvna;
 
 import java.util.*;
 
-public class StateMachinePlan<T, S, E> {
+public class StateMachinePlan<S, E> {
 
     List<E> _inputs;
     Map<S, List<S>> _transitions = new HashMap<S, List<S>>();
-    Map<S, Action<T,S,E>> _entryActions = new HashMap<S, Action<T,S,E>>();
-    Map<S, Action<T,S,E>> _leaveActions = new HashMap<S, Action<T,S,E>>();
+    Map<S, Action<S,E>> _entryActions = new HashMap<S, Action<S,E>>();
+    Map<S, Action<S,E>> _leaveActions = new HashMap<S, Action<S,E>>();
 
     /**
      * Register Inputs. Short method name to same space in the matrix, the first
@@ -38,7 +38,7 @@ public class StateMachinePlan<T, S, E> {
         }
     }
 
-    public void entryAction(S state, Action<T,S,E> action) {
+    public void entryAction(S state, Action<S,E> action) {
         Object previousAction = _entryActions.put(state, action);
         if (previousAction != null) {
             throw new IllegalStateException(
@@ -48,7 +48,7 @@ public class StateMachinePlan<T, S, E> {
         }
     }
 
-    public void leaveAction(S state, Action<T,S,E> action) {
+    public void leaveAction(S state, Action<S,E> action) {
         Object previousAction = _leaveActions.put(state, action);
         if (previousAction != null) {
             throw new IllegalStateException(
