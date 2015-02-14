@@ -51,8 +51,8 @@ public class StateMachineTestCase {
 			}
 		});
 
-		builder.entryAction("state1", stateOneEntry);
-		builder.entryAction("state2", stateTwoEntry);
+		unit.entryAction("state1", stateOneEntry);
+		unit.entryAction("state2", stateTwoEntry);
 
 		// queue the loopback event to trigger the entry action for the start
 		// state
@@ -95,8 +95,8 @@ public class StateMachineTestCase {
 			}
 		});
 
-		builder.leaveAction("state1", stateOneLeave);
-		builder.leaveAction("state2", stateTwoLeave);
+		unit.leaveAction("state1", stateOneLeave);
+		unit.leaveAction("state2", stateTwoLeave);
 
 		unit.queue("nudge");
 		unit.queue("nudge");

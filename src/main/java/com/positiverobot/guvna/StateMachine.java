@@ -1,7 +1,9 @@
 package com.positiverobot.guvna;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import org.slf4j.Logger;
@@ -16,6 +18,8 @@ public class StateMachine<S,E> {
     private S _currentState;
     private StateMachinePlan<S,E> _plan;
     private Queue<E> _eventQueue = new LinkedList<>();
+    private Map<S, Action<S,E>> _entryActions = new HashMap<S, Action<S,E>>();
+    private Map<S, Action<S,E>> _leaveActions = new HashMap<S, Action<S,E>>();
 
     public StateMachine(StateMachinePlan<S,E> plan, S aStartState) {
         _plan = plan;
@@ -38,12 +42,12 @@ public class StateMachine<S,E> {
     }
 
     private void performTransition(S nextState, E event) {
-        Action<S,E> leaveAction = _plan._leaveActions.get(_currentState);
+        Action<S,E> leaveAction = _leaveActions.get(_currentState);
         if (leaveAction != null) {
             leaveAction.apply(this, event, nextState);
         }
 
-        Action<S,E> entryAction = _plan._entryActions.get(nextState);
+        Action<S,E> entryAction = _entryActions.get(nextState);
         if (entryAction != null) {
             entryAction.apply(this, event, nextState);
         }
@@ -109,6 +113,26 @@ public class StateMachine<S,E> {
         }
     }
 
+    public void entryAction(S state, Action<S,E> action) {
+        Object previousAction = _entryActions.put(state, action);
+        if (previousAction != null) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Replacing the previous entry Action for [%s] is not allowed",
+                            previousAction));
+        }
+    }
+
+    public void leaveAction(S state, Action<S,E> action) {
+        Object previousAction = _leaveActions.put(state, action);
+        if (previousAction != null) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Replacing the previous leave Action for [%s] is not allowed",
+                            previousAction));
+        }
+    }
+    
     @Override
     public String toString() {
         return "StateMachine [_currentState=" + _currentState
