@@ -14,7 +14,7 @@ public class TrafficLightTestCase {
 	@Test
 	public void testTrafficLightTransitionMatrix() {
 
-		StateMachine unit = new TrafficLightFSM(s.Green);
+		StateMachine<s,e> unit = new TrafficLightFSM(s.Green);
 
 		assertEquals("Wrong state", s.Green, unit.getState());
 
