@@ -10,19 +10,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Not threadsafe.
  */
-public class StateMachine {
+public class StateMachine<S,E> {
     private final Logger LOG = LoggerFactory.getLogger(StateMachine.class);
 
-    private Object _currentState;
-    private StateMachinePlan _plan;
-    private Queue<Object> _eventQueue = new LinkedList<Object>();
+    private S _currentState;
+    private StateMachinePlan<StateMachine<S,E>,S,E> _plan;
+    private Queue<E> _eventQueue = new LinkedList<>();
 
-    public StateMachine(StateMachinePlan plan, Object aStartState) {
+    public StateMachine(StateMachinePlan<StateMachine<S,E>, S,E> plan, S aStartState) {
         _plan = plan;
         _currentState = aStartState;
     }
 
-    public Object getState() {
+    public S getState() {
         return _currentState;
     }
 
@@ -30,20 +30,20 @@ public class StateMachine {
      * @param event
      *            will cause a runtime exception
      */
-    public void queue(Object event) {
+    public void queue(E event) {
         if (event == null) {
             throw new IllegalArgumentException("Null events are invalid");
         }
         _eventQueue.add(event);
     }
 
-    private void performTransition(Object nextState, Object event) {
-        Action leaveAction = _plan._leaveActions.get(_currentState);
+    private void performTransition(S nextState, E event) {
+        Action<StateMachine<S,E>,S,E> leaveAction = _plan._leaveActions.get(_currentState);
         if (leaveAction != null) {
             leaveAction.apply(this, event, nextState);
         }
 
-        Action entryAction = _plan._entryActions.get(nextState);
+        Action<StateMachine<S,E>,S,E> entryAction = _plan._entryActions.get(nextState);
         if (entryAction != null) {
             entryAction.apply(this, event, nextState);
         }
@@ -56,7 +56,7 @@ public class StateMachine {
      * @return true if more exist
      */
     public boolean processNextEvent() {
-        Object event = _eventQueue.poll();
+        E event = _eventQueue.poll();
 
         // Ignore null events as we can't tell if they're real
         // or indicate the queue is empty
@@ -71,10 +71,10 @@ public class StateMachine {
 
             LOG.debug("{} received event type:[{}]", this, event);
 
-            List<?> list = _plan._transitions.get(_currentState);
+            List<S> list = _plan._transitions.get(_currentState);
             if (list != null) {
                 if (list.size() > indexOfEvent) {
-                    Object nextState = computeNextState(list.get(indexOfEvent));
+                    S nextState = computeNextState(list.get(indexOfEvent));
                     if (nextState != null) {
                         performTransition(nextState, event);
                         LOG.debug("{} processed event type:[{}]", this, event);
@@ -96,7 +96,7 @@ public class StateMachine {
         return hasMoreEvents();
     }
 
-    protected Object computeNextState(Object object) {
+    protected S computeNextState(S object) {
         return object;
     }
 

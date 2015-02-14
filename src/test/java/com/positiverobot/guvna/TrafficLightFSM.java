@@ -52,15 +52,15 @@ public class TrafficLightFSM extends StateMachine {
 			at(s.Amber   , null      , null      , s.Red     );
 			// @formatter:on
 
-			Action<TrafficLightFSM> startBeepTimer = new Action<TrafficLightFSM>() {
-				public void apply(TrafficLightFSM fsm, Object event,
-						Object nextState) {
+			Action<TrafficLightFSM,s,e> startBeepTimer = new Action<TrafficLightFSM,s,e>() {
+				public void apply(TrafficLightFSM fsm, e event,
+						s nextState) {
 				}
 			};
 
-			Action<TrafficLightFSM> startWaitTimer = new Action<TrafficLightFSM>() {
-				public void apply(TrafficLightFSM fsm, Object event,
-						Object nextState) {
+			Action<TrafficLightFSM,s,e> startWaitTimer = new Action<TrafficLightFSM,s,e>() {
+				public void apply(TrafficLightFSM fsm, e event,
+						s nextState) {
 				}
 			};
 
