@@ -77,7 +77,7 @@ public class StateMachineTestCase {
 		final Sequence transitions = _mockery
 				.sequence("State transition order");
 
-		StateMachinePlan<String,String> builder = new StateMachinePlan<>();
+		StateMachinePlan<String,String> builder = new StateMachinePlan<String,String>();
 		// @formatter:off
 		builder.ri(null    , "nudge");
 		builder.at("state1", "state2");

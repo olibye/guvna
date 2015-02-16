@@ -18,8 +18,8 @@ public class StateMachine<S,E> {
     private S _currentState;
     private StateMachinePlan<S,E> _plan;
     private Queue<E> _eventQueue = new LinkedList<>();
-    private Map<S, Action<S,E>> _entryActions = new HashMap<S, Action<S,E>>();
-    private Map<S, Action<S,E>> _leaveActions = new HashMap<S, Action<S,E>>();
+    private Map<S, Action<S,E>> _entryActions = new HashMap<>();
+    private Map<S, Action<S,E>> _leaveActions = new HashMap<>();
 
     public StateMachine(StateMachinePlan<S,E> plan, S aStartState) {
         _plan = plan;
