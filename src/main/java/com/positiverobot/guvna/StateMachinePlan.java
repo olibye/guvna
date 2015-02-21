@@ -4,8 +4,8 @@ import java.util.*;
 
 public class StateMachinePlan<S, E> {
 
-    List<E> _inputs;
-    Map<S, List<S>> _transitions = new HashMap<S, List<S>>();
+    protected List<E> _inputs;
+    protected Map<S, List<S>> _transitions = new HashMap<S, List<S>>();
 
     /**
      * Register Inputs. Short method name to same space in the matrix, the first
@@ -26,7 +26,7 @@ public class StateMachinePlan<S, E> {
     @SuppressWarnings("unchecked")
     public void at(S... theTransitions) {
         List<S> transitions = Arrays.asList(theTransitions);
-        Object previousState = _transitions
+        List<S> previousState = _transitions
                 .put(transitions.get(0), transitions);
         if (previousState != null) {
             throw new IllegalStateException(

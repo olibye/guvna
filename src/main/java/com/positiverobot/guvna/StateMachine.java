@@ -23,7 +23,7 @@ public class StateMachine<S,E> {
 
     public StateMachine(StateMachinePlan<S,E> plan, S aStartState) {
         _plan = plan;
-        _currentState = aStartState;
+        swapState(aStartState);
     }
 
     public S getState() {
@@ -52,6 +52,10 @@ public class StateMachine<S,E> {
             entryAction.apply(this, event, nextState);
         }
         // entry actions performed before state change
+        swapState(nextState);
+    }
+
+    protected void swapState(S nextState) {
         _currentState = nextState;
     }
 
