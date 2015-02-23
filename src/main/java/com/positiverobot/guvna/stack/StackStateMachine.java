@@ -12,7 +12,7 @@ import com.positiverobot.guvna.StateMachine;
  * Support a stack based state machine
  */
 public class StackStateMachine<S,E> extends StateMachine<S, E> {
-    private final Logger LOG = LoggerFactory.getLogger(StackStateMachine.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StackStateMachine.class);
 
     protected final Stack<S> _stack = new Stack<S>();
     private StackStateMachinePlan<S, E> _splan;
@@ -51,7 +51,12 @@ public class StackStateMachine<S,E> extends StateMachine<S, E> {
      */
     static final class Pop<S,E> implements Transition<S,E> {
         public S apply(StackStateMachine<S,E> ssm) {
-            return ssm._stack.pop();
+            if(ssm._stack.size() == 1) {
+                LOG.error("Top of stack is the current state");
+                return null;
+            }
+            ssm._stack.pop();
+            return ssm._stack.peek();
         }
     }
 
