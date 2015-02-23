@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 public class StateMachine<S, E> {
     private final Logger LOG = LoggerFactory.getLogger(StateMachine.class);
 
-    private S _currentState;
-    private StateMachinePlan<S, E> _plan;
+    protected S _currentState;
+    protected StateMachinePlan<S, E> _plan;
     private Queue<E> _eventQueue = new LinkedList<E>();
     private Map<S, Action<S, E>> _entryActions = new HashMap<S, Action<S, E>>();
     private Map<S, Action<S, E>> _leaveActions = new HashMap<S, Action<S, E>>();
@@ -87,7 +87,7 @@ public class StateMachine<S, E> {
     }
 
     protected S computeNextState(E event) {
-        int indexOfEvent = _plan._inputs.indexOf(event);
+        int indexOfEvent = _plan.indexOf(event);
 
         if (indexOfEvent >= 0) {
             // don't ignore loopback event in column zero

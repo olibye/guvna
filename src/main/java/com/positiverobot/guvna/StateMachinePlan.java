@@ -35,4 +35,8 @@ public class StateMachinePlan<S, E> {
                             previousState));
         }
     }
+    
+    public int indexOf(E event) {
+        return _inputs.indexOf(event);
+    }
 }
