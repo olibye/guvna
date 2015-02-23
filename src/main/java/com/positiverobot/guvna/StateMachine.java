@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Not threadsafe.
  */
-public class StateMachine<S,E> {
+public class StateMachine<S, E> {
     private final Logger LOG = LoggerFactory.getLogger(StateMachine.class);
 
     private S _currentState;
-    private StateMachinePlan<S,E> _plan;
-    private Queue<E> _eventQueue = new LinkedList<>();
-    private Map<S, Action<S,E>> _entryActions = new HashMap<>();
-    private Map<S, Action<S,E>> _leaveActions = new HashMap<>();
+    private StateMachinePlan<S, E> _plan;
+    private Queue<E> _eventQueue = new LinkedList<E>();
+    private Map<S, Action<S, E>> _entryActions = new HashMap<S, Action<S, E>>();
+    private Map<S, Action<S, E>> _leaveActions = new HashMap<S, Action<S, E>>();
 
-    public StateMachine(StateMachinePlan<S,E> plan, S aStartState) {
+    public StateMachine(StateMachinePlan<S, E> plan, S aStartState) {
         _plan = plan;
         swapState(aStartState);
     }
@@ -42,12 +42,12 @@ public class StateMachine<S,E> {
     }
 
     private void performTransition(S nextState, E event) {
-        Action<S,E> leaveAction = _leaveActions.get(_currentState);
+        Action<S, E> leaveAction = _leaveActions.get(_currentState);
         if (leaveAction != null) {
             leaveAction.apply(this, event, nextState);
         }
 
-        Action<S,E> entryAction = _entryActions.get(nextState);
+        Action<S, E> entryAction = _entryActions.get(nextState);
         if (entryAction != null) {
             entryAction.apply(this, event, nextState);
         }
@@ -71,26 +71,31 @@ public class StateMachine<S,E> {
         if (event == null) {
             return hasMoreEvents();
         }
+        
+        LOG.debug("{} received event type:[{}]", this, event);
 
+        S nextState = computeNextState(event);
+        if (nextState != null) {
+            performTransition(nextState, event);
+            LOG.debug("{} processed event type:[{}]", this, event);
+        } else {
+            LOG.debug("{} has no transition for registered event:[{}]", this,
+                    event);
+        }
+
+        return hasMoreEvents();
+    }
+
+    protected S computeNextState(E event) {
         int indexOfEvent = _plan._inputs.indexOf(event);
 
         if (indexOfEvent >= 0) {
             // don't ignore loopback event in column zero
 
-            LOG.debug("{} received event type:[{}]", this, event);
-
             List<S> list = _plan._transitions.get(_currentState);
             if (list != null) {
                 if (list.size() > indexOfEvent) {
-                    S nextState = computeNextState(list.get(indexOfEvent));
-                    if (nextState != null) {
-                        performTransition(nextState, event);
-                        LOG.debug("{} processed event type:[{}]", this, event);
-                    } else {
-                        LOG.debug(
-                                "{} has no transition for registered event:[{}]",
-                                this, event);
-                    }
+                    return list.get(indexOfEvent);
                 } else {
                     LOG.debug("{} has no transition for registered event:[{}]",
                             this, event);
@@ -101,11 +106,7 @@ public class StateMachine<S,E> {
         } else {
             LOG.error("{} received Unknown event type:[{}]", this, event);
         }
-        return hasMoreEvents();
-    }
-
-    protected S computeNextState(S object) {
-        return object;
+        return null;
     }
 
     public boolean hasMoreEvents() {
@@ -117,7 +118,7 @@ public class StateMachine<S,E> {
         }
     }
 
-    public void entryAction(S state, Action<S,E> action) {
+    public void entryAction(S state, Action<S, E> action) {
         Object previousAction = _entryActions.put(state, action);
         if (previousAction != null) {
             throw new IllegalStateException(
@@ -127,7 +128,7 @@ public class StateMachine<S,E> {
         }
     }
 
-    public void leaveAction(S state, Action<S,E> action) {
+    public void leaveAction(S state, Action<S, E> action) {
         Object previousAction = _leaveActions.put(state, action);
         if (previousAction != null) {
             throw new IllegalStateException(
@@ -136,7 +137,7 @@ public class StateMachine<S,E> {
                             previousAction));
         }
     }
-    
+
     @Override
     public String toString() {
         return "StateMachine [_currentState=" + _currentState
