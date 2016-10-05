@@ -12,7 +12,27 @@ package com.positiverobot.guvna;
  * @author byeo
  * 
  */
-public class TrafficLightFSM extends StateMachine {
+public class TrafficLightFSM extends StateMachine<TrafficLightFSM.s,TrafficLightFSM.e> {
+
+	private static final class TrafficLightSequence extends StateMachinePlan<s, e> {
+		{
+			/**
+			 * <pre>
+			 * This is what the project is all about.
+			 * A state transition matrix in a grid.
+			 * 
+			 * I want be able to see a 10x10 state transition matrix on one screen.
+			 * </pre>
+			 */
+			// @formatter:off
+			ri(null      , e.PushButn, e.EndBeeps, e.WaitTime);
+			at(s.Red     , null      , s.RedAmber, null      );
+			at(s.RedAmber, null      , null      , s.Green   );
+			at(s.Green   , s.Amber   , null      , null      );
+			at(s.Amber   , null      , null      , s.Red     );
+			// @formatter:on
+		}
+	}
 
 	/**
 	 * States
@@ -33,46 +53,23 @@ public class TrafficLightFSM extends StateMachine {
 	 * You obviously shouldn't store individual state in the plan.
 	 * Your FSM will be passed into the transition Actions
 	 */
-	private static final StateMachinePlan sPLAN = new StateMachinePlan() {
-		{
+	private static final StateMachinePlan<s,e> sPLAN = new TrafficLightSequence();
 
-			/**
-			 * <pre>
-			 * This is what the project is all about.
-			 * A state transition matrix in a grid.
-			 * 
-			 * I want be able to see a 10x10 state transition matrix on one screen.
-			 * </pre>
-			 */
-			// @formatter:off
-			ri(null      , e.PushButn, e.EndBeeps, e.WaitTime);
-			at(s.Red     , null      , s.RedAmber, null      );
-			at(s.RedAmber, null      , null      , s.Green   );
-			at(s.Green   , s.Amber   , null      , null      );
-			at(s.Amber   , null      , null      , s.Red     );
-			// @formatter:on
-
-			Action<TrafficLightFSM> startBeepTimer = new Action<TrafficLightFSM>() {
-				public void apply(TrafficLightFSM fsm, Object event,
-						Object nextState) {
-				}
-			};
-
-			Action<TrafficLightFSM> startWaitTimer = new Action<TrafficLightFSM>() {
-				public void apply(TrafficLightFSM fsm, Object event,
-						Object nextState) {
-				}
-			};
-
-			entryAction(s.Red, startBeepTimer);
-			entryAction(s.RedAmber, startWaitTimer);
-			entryAction(s.Amber, startWaitTimer);
-
+	Action<s,e> startBeepTimer = new Action<s,e>() {
+		public void apply(StateMachine<s,e> fsm, e event,s nextState) {
+		}
+	};
+	
+	Action<s,e> startWaitTimer = new Action<s,e>() {
+		public void apply(StateMachine<s,e> fsm, e event, s nextState) {
 		}
 	};
 
-	public TrafficLightFSM(Object aStartState) {
+	public TrafficLightFSM(s aStartState) {
 		super(sPLAN, aStartState);
+		
+		entryAction(s.Red, startBeepTimer);
+		entryAction(s.RedAmber, startWaitTimer);
+		entryAction(s.Amber, startWaitTimer);	
 	}
-
 }
