@@ -10,20 +10,18 @@ public class StateMachinePlan<S, E> {
     /**
      * Register Inputs. Short method name to same space in the matrix, the first
      * input is the "loopback" which will cause reentry to the current state
-     * 
+     *
      * @param inputs
      */
-    @SuppressWarnings("unchecked")
     public void ri(E... inputs) {
         _inputs = Arrays.asList(inputs);
     }
 
     /**
      * Transitions
-     * 
+     *
      * @param theTransitions
      */
-    @SuppressWarnings("unchecked")
     public void at(S... theTransitions) {
         List<S> transitions = Arrays.asList(theTransitions);
         List<S> previousState = _transitions
@@ -35,7 +33,7 @@ public class StateMachinePlan<S, E> {
                             previousState));
         }
     }
-    
+
     public int indexOf(E event) {
         return _inputs.indexOf(event);
     }

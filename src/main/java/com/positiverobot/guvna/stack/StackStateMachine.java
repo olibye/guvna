@@ -11,7 +11,7 @@ import com.positiverobot.guvna.StateMachine;
 /**
  * Support a stack based state machine
  */
-public class StackStateMachine<S,E> extends StateMachine<S, E> {
+public class StackStateMachine<S, E> extends StateMachine<S, E> {
     private static final Logger LOG = LoggerFactory.getLogger(StackStateMachine.class);
 
     protected final Stack<S> _stack = new Stack<S>();
@@ -29,7 +29,7 @@ public class StackStateMachine<S,E> extends StateMachine<S, E> {
 
         if (indexOfEvent >= 0) {
             // don't ignore loopback event in column zero
-            List<Transition<S,E>> list = _splan._stackTransitions.get(_currentState);
+            List<Transition<S, E>> list = _splan._stackTransitions.get(_currentState);
             if (list != null) {
                 if (list.size() > indexOfEvent) {
                     return list.get(indexOfEvent).apply(this);
@@ -49,9 +49,10 @@ public class StackStateMachine<S,E> extends StateMachine<S, E> {
     /**
      * Allow the plan to pop the stack into the current state
      */
-    static final class Pop<S,E> implements Transition<S,E> {
-        public S apply(StackStateMachine<S,E> ssm) {
-            if(ssm._stack.size() == 1) {
+    static final class Pop<S, E> implements Transition<S, E> {
+        @Override
+        public S apply(StackStateMachine<S, E> ssm) {
+            if (ssm._stack.size() == 1) {
                 LOG.error("Top of stack is the current state");
                 return null;
             }
@@ -63,14 +64,15 @@ public class StackStateMachine<S,E> extends StateMachine<S, E> {
     /**
      * Allow the plan to push a new state onto the stack
      */
-    static final class Push<S,E> implements Transition<S,E> {
+    static final class Push<S, E> implements Transition<S, E> {
         private final S newState;
-    
+
         Push(S newState) {
             this.newState = newState;
         }
-    
-        public S apply(StackStateMachine<S,E> ssm) {
+
+        @Override
+        public S apply(StackStateMachine<S, E> ssm) {
             return ssm._stack.push(newState);
         }
     }
@@ -78,21 +80,22 @@ public class StackStateMachine<S,E> extends StateMachine<S, E> {
     /**
      * Swap the current state at the top of the stack for a new state
      */
-    static final class Swap<S,E> implements Transition<S,E> {
+    static final class Swap<S, E> implements Transition<S, E> {
         private final S newState;
-    
+
         Swap(S newState) {
             this.newState = newState;
         }
-    
-        public S apply(StackStateMachine<S,E> ssm) {
+
+        @Override
+        public S apply(StackStateMachine<S, E> ssm) {
             ssm._stack.pop();
             return ssm._stack.push(newState);
         }
     }
 
-    public abstract static interface Transition<S,E> {
-        public abstract S apply(StackStateMachine<S,E> stackStateMachine);
+    public abstract static interface Transition<S, E> {
+        public abstract S apply(StackStateMachine<S, E> stackStateMachine);
     }
 
 }

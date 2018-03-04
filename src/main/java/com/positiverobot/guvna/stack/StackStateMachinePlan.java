@@ -14,7 +14,7 @@ import com.positiverobot.guvna.stack.StackStateMachine.Transition;
 
 /**
  * My plans can include pop() and push(state)
- * 
+ *
  * @author byeo
  */
 public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
@@ -23,7 +23,7 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
 
     /**
      * Swap the active for a new state
-     * 
+     *
      * @return the new active state
      */
     protected Transition<S, E> swap(final S newState) {
@@ -32,7 +32,7 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
 
     /**
      * Push a new active state onto the stack
-     * 
+     *
      * @return the new active state
      */
     protected Transition<S, E> push(final S newState) {
@@ -48,7 +48,7 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
 
     /**
      * Transitions
-     * 
+     *
      * @param theTransitions
      */
     public void at(S fromState, Transition<S, E>... theTransitions) {
@@ -71,7 +71,7 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
 
     private void nullMeansSwap(S fromState,
             List<Transition<S, E>> transitionList) {
-        
+
         for (int i = 0; i < transitionList.size(); i++) {
             Transition<S, E> transition = transitionList.get(i);
             transitionList.set(i, transition == null ? swap(fromState)

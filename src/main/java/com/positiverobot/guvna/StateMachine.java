@@ -60,7 +60,7 @@ public class StateMachine<S, E> {
     }
 
     /**
-     * 
+     *
      * @return true if more exist
      */
     public boolean processNextEvent() {
@@ -71,7 +71,7 @@ public class StateMachine<S, E> {
         if (event == null) {
             return hasMoreEvents();
         }
-        
+
         LOG.debug("{} received event type:[{}]", this, event);
 
         S nextState = computeNextState(event);

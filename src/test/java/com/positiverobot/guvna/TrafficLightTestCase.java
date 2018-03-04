@@ -9,31 +9,31 @@ import com.positiverobot.guvna.TrafficLightFSM.e;
 import com.positiverobot.guvna.TrafficLightFSM.s;
 
 public class TrafficLightTestCase {
-	public Mockery _mockery = new Mockery();
+    public Mockery _mockery = new Mockery();
 
-	@Test
-	public void testTrafficLightTransitionMatrix() {
+    @Test
+    public void testTrafficLightTransitionMatrix() {
 
-		StateMachine unit = new TrafficLightFSM(s.Green);
+        StateMachine<s, e> unit = new TrafficLightFSM(s.Green);
 
-		assertEquals("Wrong state", s.Green, unit.getState());
+        assertEquals("Wrong state", s.Green, unit.getState());
 
-		unit.queue(e.PushButn);
-		unit.processNextEvent();
-		assertEquals("Wrong state", s.Amber, unit.getState());
+        unit.queue(e.PushButn);
+        unit.processNextEvent();
+        assertEquals("Wrong state", s.Amber, unit.getState());
 
-		unit.queue(e.WaitTime);
-		unit.processNextEvent();
-		assertEquals("Wrong state", s.Red, unit.getState());
+        unit.queue(e.WaitTime);
+        unit.processNextEvent();
+        assertEquals("Wrong state", s.Red, unit.getState());
 
-		unit.queue(e.EndBeeps);
-		unit.processNextEvent();
-		assertEquals("Wrong state", s.RedAmber, unit.getState());
+        unit.queue(e.EndBeeps);
+        unit.processNextEvent();
+        assertEquals("Wrong state", s.RedAmber, unit.getState());
 
-		unit.queue(e.WaitTime);
-		unit.processNextEvent();
-		assertEquals("Wrong state", s.Green, unit.getState());
+        unit.queue(e.WaitTime);
+        unit.processNextEvent();
+        assertEquals("Wrong state", s.Green, unit.getState());
 
-		_mockery.assertIsSatisfied();
-	}
+        _mockery.assertIsSatisfied();
+    }
 }

@@ -11,103 +11,100 @@ import org.jmock.Sequence;
 import org.junit.Test;
 
 public class StateMachineTestCase {
-	public Mockery _mockery = new Mockery();
+    public Mockery _mockery = new Mockery();
 
-	@Test
-	public void testArraysAsList() {
-		String[] stringArrary = { "one", "two", "three" };
-		List<String> asList = Arrays.asList(stringArrary);
+    @Test
+    public void testArraysAsList() {
+        String[] stringArrary = { "one", "two", "three" };
+        List<String> asList = Arrays.asList(stringArrary);
 
-		assertEquals(3, asList.size());
-	}
+        assertEquals(3, asList.size());
+    }
 
-	@Test
-	public void testEntryAction() {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testEntryAction() {
 
-		final Action stateOneEntry = _mockery.mock(Action.class,
-				"stateOneEntryAction");
-		final Action stateTwoEntry = _mockery.mock(Action.class,
-				"stateTwoEntryAction");
+        final Action<String, String> stateOneEntry = _mockery.mock(Action.class,
+                "stateOneEntryAction");
+        final Action<String, String> stateTwoEntry = _mockery.mock(Action.class,
+                "stateTwoEntryAction");
 
-		final Object target = new Object();
+        final Sequence transitions = _mockery
+                .sequence("State transition order");
 
-		final Sequence transitions = _mockery
-				.sequence("State transition order");
+        StateMachinePlan<String, String> builder = new StateMachinePlan<String, String>();
+        builder.ri("loopback", "nudge");
+        builder.at("state1", "state2");
+        builder.at("state2", "state1");
+        final StateMachine<String, String> unit = new StateMachine<String, String>(builder, "state1");
 
-		StateMachinePlan builder = new StateMachinePlan();
-		builder.ri("loopback", "nudge");
-		builder.at("state1", "state2");
-		builder.at("state2", "state1");
-		final StateMachine unit = new StateMachine(builder, "state1");
+        _mockery.checking(new Expectations() {
+            {
+                oneOf(stateOneEntry).apply(unit, "loopback", "state1");
+                inSequence(transitions);
 
-		_mockery.checking(new Expectations() {
-			{
-				oneOf(stateOneEntry).apply(unit, "loopback", "state1");
-				inSequence(transitions);
+                oneOf(stateTwoEntry).apply(unit, "nudge", "state2");
+                inSequence(transitions);
 
-				oneOf(stateTwoEntry).apply(unit, "nudge", "state2");
-				inSequence(transitions);
+                oneOf(stateOneEntry).apply(unit, "nudge", "state1");
+                inSequence(transitions);
+            }
+        });
 
-				oneOf(stateOneEntry).apply(unit, "nudge", "state1");
-				inSequence(transitions);
-			}
-		});
+        unit.entryAction("state1", stateOneEntry);
+        unit.entryAction("state2", stateTwoEntry);
 
-		unit.entryAction("state1", stateOneEntry);
-		unit.entryAction("state2", stateTwoEntry);
+        // queue the loopback event to trigger the entry action for the start
+        // state
+        unit.queue("loopback");
+        unit.processNextEvent();
 
-		// queue the loopback event to trigger the entry action for the start
-		// state
-		unit.queue("loopback");
-		unit.processNextEvent();
+        unit.queue("nudge");
+        unit.queue("nudge");
+        unit.processOutstandingEvents();
 
-		unit.queue("nudge");
-		unit.queue("nudge");
-		unit.processOutstandingEvents();
+        _mockery.assertIsSatisfied();
+    }
 
-		_mockery.assertIsSatisfied();
-	}
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testLeaveAction() {
 
-	@Test
-	public void testLeaveAction() {
+        final Action<String, String> stateOneLeave = _mockery.mock(Action.class,
+                "stateOneLeaveAction");
+        final Action<String, String> stateTwoLeave = _mockery.mock(Action.class,
+                "stateTwoLeaveAction");
 
-		final Action stateOneLeave = _mockery.mock(Action.class,
-				"stateOneLeaveAction");
-		final Action stateTwoLeave = _mockery.mock(Action.class,
-				"stateTwoLeaveAction");
+        final Sequence transitions = _mockery
+                .sequence("State transition order");
 
-		final Object target = new Object();
+        StateMachinePlan<String, String> builder = new StateMachinePlan<String, String>();
+        // @formatter:off
+        builder.ri(null, "nudge");
+        builder.at("state1", "state2");
+        builder.at("state2", "state1");
+        // @formatter:on
+        final StateMachine<String, String> unit = new StateMachine<String, String>(builder, "state1");
 
-		final Sequence transitions = _mockery
-				.sequence("State transition order");
+        _mockery.checking(new Expectations() {
+            {
+                oneOf(stateOneLeave).apply(unit, "nudge", "state2");
+                inSequence(transitions);
 
-		StateMachinePlan builder = new StateMachinePlan();
-		// @formatter:off
-		builder.ri(null    , "nudge");
-		builder.at("state1", "state2");
-		builder.at("state2", "state1");
-		// @formatter:on
-		final StateMachine unit = new StateMachine(builder, "state1");
+                oneOf(stateTwoLeave).apply(unit, "nudge", "state1");
+                inSequence(transitions);
+            }
+        });
 
-		_mockery.checking(new Expectations() {
-			{
-				oneOf(stateOneLeave).apply(unit, "nudge", "state2");
-				inSequence(transitions);
+        unit.leaveAction("state1", stateOneLeave);
+        unit.leaveAction("state2", stateTwoLeave);
 
-				oneOf(stateTwoLeave).apply(unit, "nudge", "state1");
-				inSequence(transitions);
-			}
-		});
+        unit.queue("nudge");
+        unit.queue("nudge");
+        unit.processOutstandingEvents();
 
-		unit.leaveAction("state1", stateOneLeave);
-		unit.leaveAction("state2", stateTwoLeave);
-
-		unit.queue("nudge");
-		unit.queue("nudge");
-		unit.processOutstandingEvents();
-
-		_mockery.assertIsSatisfied();
-	}
-
+        _mockery.assertIsSatisfied();
+    }
 
 }
