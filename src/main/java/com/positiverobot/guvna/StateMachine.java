@@ -31,8 +31,7 @@ public class StateMachine<S, E> {
     }
 
     /**
-     * @param event
-     *            will cause a runtime exception
+     * @param event next event for the FSM
      */
     public void queue(E event) {
         if (event == null) {

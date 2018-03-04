@@ -24,6 +24,7 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
     /**
      * Swap the active for a new state
      *
+     * @param newState the new target state
      * @return the new active state
      */
     protected Transition<S, E> swap(final S newState) {
@@ -33,6 +34,7 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
     /**
      * Push a new active state onto the stack
      *
+     * @param newState the new target state
      * @return the new active state
      */
     protected Transition<S, E> push(final S newState) {
@@ -41,6 +43,8 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
 
     /**
      * Pop and return next state as the current state
+     * 
+     * @return the next state
      */
     protected Transition<S, E> pop() {
         return new Pop<S, E>();
@@ -48,8 +52,8 @@ public class StackStateMachinePlan<S, E> extends StateMachinePlan<S, E> {
 
     /**
      * Transitions
-     *
-     * @param theTransitions
+     * @param fromState the state for which to register theTransitions
+     * @param theTransitions possible transitions
      */
     public void at(S fromState, Transition<S, E>... theTransitions) {
         // prepend null transition to match original API
