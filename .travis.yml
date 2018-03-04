@@ -3,3 +3,7 @@ language: java
 jdk:
   - oraclejdk8
   - openjdk7 #oracle not supported anymore 
+
+cache:
+  directories:
+  - $HOME/.m2 #for faster builds
