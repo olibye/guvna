@@ -8,10 +8,10 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 #Release
 ----
-mvn versions:set -DoldVersion=2.8.1-SNAPSHOT -DnewVersion=2.8.1 -DgroupId=org.jmock
+mvn versions:set -DoldVersion=2.8.1-SNAPSHOT -DnewVersion=2.8.1 -DgroupId=com.positiverobot
 find . -name pom.xml.versionsBackup -exec rm {} \;
 
 eval $(gpg-agent --daemon --no-grab)
 export GPG_AGENT_INFO
 export GPG_TTY=$(tty)
-mvn clean deploy -P release --settings settings.xml -Dgpg.keyname=XXXXXXXX
+mvn clean deploy -P release -Dgpg.keyname=XXXXXXXX
