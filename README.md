@@ -24,8 +24,13 @@ mvn clean install -P release -Dgpg.keyname=XXXXXXXX
 
 deploy to sonatype repository
 ```
-export SONATYPE_USERNAME
-export SONATYPE_PASSWORD
+export SONATYPE_USERNAME=xx
+export SONATYPE_PASSWORD=yy
 
 mvn clean deploy -P release  --settings settings.xml -Dgpg.keyname=XXXXXXXX
 ```
+
+### Check deployment
+It will not appear immediately at https://mvnrepository.com/artifact/com.positiverobot/guvna
+Instead check check https://oss.sonatype.org/#nexus-search;quick~guvna
+Publishing to mvnrepository.com will happen eventually
