@@ -5,12 +5,48 @@
 	<artifactId>guvna</artifactId>
 	<version>2.1.0-SNAPSHOT</version>
 	<name>Guvna</name>
-	<description>Guvna</description>
+    <description>Guvna is a java state machine library that aims to make it easy to layout a state transition table in code.</description>
+    <url>https://github.com/olibye/guvna</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/olibye/guvna.git</connection>
+        <developerConnection>scm:git:git@github.com:olibye/guvna.git</developerConnection>
+        <url>git@github.com:olibye/guvna.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Oliver Bye</name>
+            <email>oli.github@mail-filter.com</email>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.jmock</groupId>
 			<artifactId>jmock</artifactId>
-			<version>2.5.1</version>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+            <version>2.6.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -30,6 +66,12 @@
 			<version>1.6.1</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <!-- Because JMock 2.6 requires org.hamcrest.TypeSafeDiagnosingMatcher<T> -->
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>1.3</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -38,11 +80,81 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+                    <!-- For android support -->
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+
+            <plugin>
+                <!-- http://central.sonatype.org/pages/apache-maven.html -->
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- http://central.sonatype.org/pages/apache-maven.html -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <!-- http://central.sonatype.org/pages/apache-maven.html -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- http://central.sonatype.org/pages/apache-maven.html -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 		</plugins>
 	</build>
+        </profile>
+    </profiles>
 	
 </project>
